@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="small_marks_height">10dp</dimen>
+    <dimen name="big_marks_height">15dp</dimen>
+    <dimen name="big_marks_width">6dp</dimen>
+    <dimen name="small_marks_width">4dp</dimen>
+</resources>
