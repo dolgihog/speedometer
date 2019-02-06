@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="SpeedometerView">
+        <attr name="smallBarsWidth" format="dimension"/>
+        <attr name="smallBarsHeight" format="dimension"/>
+        <attr name="bigBarsWidth" format="dimension"/>
+        <attr name="bigBarsHeight" format="dimension"/>
+        <attr name="angleMaxDegrees" format="float"/>
+        <attr name="angleMinDegrees" format="float"/>
+        <attr name="bigSpeedStepKmh" format="float"/>
+        <attr name="smallSpeedStepKmh" format="float"/>
+        <attr name="minSpeedKmh" format="float"/>
+        <attr name="maxSpeedKmh" format="float"/>
+        <attr name="backgroundColor" format="color"/>
+        <attr name="bigBarsColor" format="color"/>
+        <attr name="smallBarsColor" format="color"/>
+        <attr name="textColor" format="color"/>
+        <attr name="textSize" format="dimension"/>
+        <attr name="pointerColor" format="color"/>
+        <attr name="pointerWidth" format="dimension"/>
+        <attr name="pointerHeight" format="dimension"/>
+    </declare-styleable>
+</resources>

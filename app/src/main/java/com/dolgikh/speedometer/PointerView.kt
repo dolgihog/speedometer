@@ -1,48 +1,44 @@
 package com.dolgikh.speedometer
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
-import android.util.Log
 import android.view.View
 import androidx.annotation.ColorInt
 import kotlin.math.min
 
-class PointerView : View {
+@SuppressLint("ViewConstructor")
+class PointerView(
+    context: Context,
+    pointerWidthPx: Float,
+    @ColorInt private val pointerColor: Int
+) : View(context) {
 
     companion object {
         private const val LOG_TAG = "PointerView"
     }
 
+    private var defPointerHeight: Float = 0f
+    private var centerX: Float = 0f
+    private var centerY: Float = 0f
+    private val halfOfPointerWidth: Float = pointerWidthPx / 2
     var pointerHeightPx: Float? = null
-    private val pointerWidthPx: Float
-    private val paint: Paint
+
+    private val paint: Paint = Paint().apply {
+        color = pointerColor
+    }
+
     var angleDegrees: Float = 0f
         set(value) {
             field = value
             invalidate()
         }
 
-    constructor(
-        context: Context,
-        @ColorInt pointerColor: Int,
-        pointerWidthPx: Float
-    ) : super(context) {
-        this.pointerWidthPx = pointerWidthPx
-        this.paint = Paint().apply { color = pointerColor }
-    }
-
-//    constructor(context: Context, attrs: AttributeSet) : super(context) {
-//
-//    }
-
     override fun onDraw(canvas: Canvas?) {
-        Log.d(LOG_TAG, "onDraw")
         super.onDraw(canvas)
         if (canvas == null) return
-        val centerX = width / 2f
-        val centerY = height / 2f
-        val pointerHeightPx = this.pointerHeightPx ?: min(width, height) / 2f
+        val pointerHeightPx = this.pointerHeightPx ?: defPointerHeight
         drawPointer(canvas, centerX = centerX, centerY = centerY, pointerHeightPx = pointerHeightPx)
     }
 
@@ -54,9 +50,9 @@ class PointerView : View {
     ) {
         canvas.rotate(angleDegrees, centerX, centerY)
         canvas.drawRect(
-            centerX - pointerWidthPx / 2,
+            centerX - halfOfPointerWidth,
             centerY + pointerHeightPx,
-            centerX + pointerWidthPx / 2,
+            centerX + halfOfPointerWidth,
             centerY,
             paint
         )
@@ -65,5 +61,8 @@ class PointerView : View {
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         setMeasuredDimension(widthMeasureSpec, heightMeasureSpec)
+        defPointerHeight = min(measuredWidth, measuredHeight) / 2f
+        centerX = measuredWidth / 2f
+        centerY = measuredHeight / 2f
     }
 }
