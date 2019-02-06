@@ -28,9 +28,7 @@ class MockSpeedGenerator(
         val speedKmh: Float = msg?.data?.getFloat(KEY_SPEED) ?: 0f
         Log.d(LOG_TAG, "thread = ${Thread.currentThread().name}, data = $speedKmh")
         weakView?.let { reference ->
-            reference.get()?.let { listener ->
-                listener.onSpeedGenerated(speedKmh)
-            }
+            reference.get()?.onSpeedGenerated(speedKmh)
         }
     }
 
@@ -49,11 +47,8 @@ class MockSpeedGenerator(
             Thread.sleep(1)
             val sin = sin(System.currentTimeMillis() / 10000.toDouble())
             val speed = sin.absoluteValue * maxSpeed
-//            Log.d(LOG_TAG, "time = ${System.currentTimeMillis().toFloat()}")
-//            Log.d(LOG_TAG, "angle = $speed, sin = $sin")
             val message = obtainMessage()
             bundle.putFloat(KEY_SPEED, speed.toFloat())
-
             message.data = bundle
             sendMessage(message)
         }

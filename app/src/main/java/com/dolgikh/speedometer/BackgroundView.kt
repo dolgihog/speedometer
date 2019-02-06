@@ -3,15 +3,18 @@ package com.dolgikh.speedometer
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
-import android.util.Log
+import android.graphics.Rect
 import android.view.View
 import androidx.annotation.ColorInt
-import androidx.core.content.ContextCompat
+import java.lang.StringBuilder
+import kotlin.math.absoluteValue
 
 class BackgroundView : View {
 
     companion object {
         private const val TAG = "BackgroundView"
+        private const val SPACE_LETTER = " "
+        private const val MAX_TEXT = "000"
     }
 
     private val smallBarsWidth: Float
@@ -24,6 +27,10 @@ class BackgroundView : View {
     private val angleMinDegrees: Float
     private val angleStepDegrees: Float
     private val smallBarsAngleOffsetDegrees: Float
+    private val textPaint: Paint
+    private val textRect: Rect = Rect()
+    private val stringBuilder: StringBuilder = StringBuilder()
+
 
     constructor(
         context: Context,
@@ -36,7 +43,9 @@ class BackgroundView : View {
         angleMinDegrees: Float,
         angleMaxDegrees: Float,
         angleStepDegrees: Float,
-        smallBarsAngleOffsetDegrees: Float
+        smallBarsAngleOffsetDegrees: Float,
+        @ColorInt textColor: Int,
+        textSizePx: Float
     ) : super(context) {
         this.smallBarsWidth = smallBarsWidthPx
         this.smallBarsHeight = smallBarsHeightPx
@@ -48,6 +57,13 @@ class BackgroundView : View {
         this.angleMinDegrees = angleMinDegrees
         this.angleStepDegrees = angleStepDegrees
         this.smallBarsAngleOffsetDegrees = smallBarsAngleOffsetDegrees
+        this.textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = textColor
+            textSize = textSizePx
+            style = Paint.Style.FILL_AND_STROKE
+            strokeWidth = 3f
+            textAlign = Paint.Align.CENTER
+        }
     }
 //
 //    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
@@ -66,7 +82,42 @@ class BackgroundView : View {
         canvas.drawCircle(centerX, centerY, radius - smallBarsHeight, backgroundPaint)
         drawBigMarks(canvas, centerX, centerY, radius)
         canvas.drawCircle(centerX, centerY, radius - bigBarsHeight, backgroundPaint)
-        Log.d(TAG, "onDraw")
+        drawText(canvas, centerX, centerY, radius)
+    }
+
+    private fun drawText(
+        canvas: Canvas,
+        centerX: Float,
+        centerY: Float,
+        radius: Float
+    ) {
+        canvas.save()
+        canvas.rotate(angleMinDegrees, centerX, centerY)
+        var angle = angleMinDegrees
+        var value = 0f
+        textPaint.getTextBounds(MAX_TEXT, 0, MAX_TEXT.length, textRect)
+        val pivotY = centerY + 6 * radius / 7 - textRect.height() / 2
+        val pivotX = centerX
+        while (angle <= angleMaxDegrees) {
+            canvas.save()
+            canvas.rotate(-angle, pivotX, pivotY)
+            stringBuilder.clear()
+            stringBuilder.append(value.toInt())
+            while (stringBuilder.length < 3) {
+                stringBuilder.append(SPACE_LETTER)
+            }
+            canvas.drawText(
+                stringBuilder.toString(),
+                pivotX,
+                pivotY + textRect.height() / 2,
+                textPaint
+            )
+            canvas.restore()
+            canvas.rotate(angleStepDegrees, centerX, centerY)
+            angle += angleStepDegrees
+            value += angleStepDegrees
+        }
+        canvas.restore()
     }
 
     private fun drawBigMarks(

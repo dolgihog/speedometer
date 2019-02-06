@@ -14,6 +14,7 @@ class PointerView : View {
         private const val LOG_TAG = "PointerView"
     }
 
+    var pointerHeightPx: Float? = null
     private val pointerWidthPx: Float
     private val paint: Paint
     var angleDegrees: Float = 0f
@@ -41,15 +42,20 @@ class PointerView : View {
         if (canvas == null) return
         val centerX = width / 2f
         val centerY = height / 2f
-        val radius = min(width, height) / 2f
-        drawPointer(canvas, centerX = centerX, centerY = centerY, radius = radius)
+        val pointerHeightPx = this.pointerHeightPx ?: min(width, height) / 2f
+        drawPointer(canvas, centerX = centerX, centerY = centerY, pointerHeightPx = pointerHeightPx)
     }
 
-    private fun drawPointer(canvas: Canvas, centerX: Float, centerY: Float, radius: Float) {
+    private fun drawPointer(
+        canvas: Canvas,
+        centerX: Float,
+        centerY: Float,
+        pointerHeightPx: Float
+    ) {
         canvas.rotate(angleDegrees, centerX, centerY)
         canvas.drawRect(
             centerX - pointerWidthPx / 2,
-            centerY + radius,
+            centerY + pointerHeightPx,
             centerX + pointerWidthPx / 2,
             centerY,
             paint
