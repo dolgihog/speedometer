@@ -1,20 +1,43 @@
 package com.dolgikh.speedometer
 
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import kotlinx.android.synthetic.main.activity_main.*
-import android.os.Build
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
+import android.os.*
+import android.util.Log
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import kotlinx.android.synthetic.main.activity_main.*
 
 
-class MainActivity : AppCompatActivity(), MockSpeedGenerator.SpeedListener {
+class MainActivity : AppCompatActivity(), ClientHandler.Callback {
 
     companion object {
         private const val LOG_TAG = "MainActivity"
         private const val MAX_SPEED = 180
     }
 
-    private val mockSpeedGenerator: MockSpeedGenerator = MockSpeedGenerator(maxSpeed = MAX_SPEED)
+
+    private var bound: Boolean = false
+
+    private var messenger: Messenger = Messenger(ClientHandler(this))
+
+    private val connection = object : ServiceConnection {
+
+        override fun onServiceConnected(className: ComponentName, service: IBinder) {
+            val message = Message.obtain()
+            message.replyTo = messenger
+            Messenger(service).send(message)
+            bound = true
+        }
+
+        override fun onServiceDisconnected(className: ComponentName) {
+            Log.e(LOG_TAG, "Service has unexpectedly disconnected")
+        }
+    }
+
+//    private val mockSpeedGenerator: MockSpeedGenerator = MockSpeedGenerator(maxSpeed = MAX_SPEED)
 
     private val sdkVersion: Int = android.os.Build.VERSION.SDK_INT
     private var immersiveFlags: Int = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -28,8 +51,19 @@ class MainActivity : AppCompatActivity(), MockSpeedGenerator.SpeedListener {
         super.onCreate(savedInstanceState)
         hideNavBar()
         setContentView(R.layout.activity_main)
-        mockSpeedGenerator.setListener(this)
-        mockSpeedGenerator.start()
+//        mockSpeedGenerator.setListener(this)
+//        mockSpeedGenerator.start()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        bindService(Intent(this, MockSpeedProducer::class.java), connection, Context.BIND_AUTO_CREATE)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (bound) unbindService(connection)
+        bound = false
     }
 
     private fun hideNavBar() {
@@ -49,5 +83,7 @@ class MainActivity : AppCompatActivity(), MockSpeedGenerator.SpeedListener {
         if (hasFocus) window.decorView.systemUiVisibility = immersiveFlags
     }
 
-    override fun onSpeedGenerated(speedKmh: Float) = speedometerView.setSpeed(speedKmh)
+    override fun call(speed: Float) {
+        speedometerView.setSpeed(speed)
+    }
 }
