@@ -41,6 +41,8 @@ class SpeedometerView : FrameLayout {
     private val maxSpeed: Float
     private val backgroundView: BackgroundView
     private val pointerView: PointerView
+    private var angleMaxDegrees: Float
+    private var angleMinDegrees: Float
 
     constructor(
         context: Context,
@@ -63,6 +65,8 @@ class SpeedometerView : FrameLayout {
         smallBarsColorInt: Int? = null
     ) : super(context) {
         initDefaults(context)
+        this.angleMaxDegrees = angleMaxDegrees ?: defAngleMaxDegrees
+        this.angleMinDegrees = angleMinDegrees ?: defAngleMinDegrees
         this.maxSpeed = maxSpeedKmh ?: defMaxSpeedKmh
         this.backgroundView = BackgroundView(
             context = context,
@@ -99,8 +103,8 @@ class SpeedometerView : FrameLayout {
                 val smallBarsHeight = getDimension(R.styleable.SpeedometerView_smallBarsHeight, defSmallBarsHeightPx)
                 val bigBarsWidth = getDimension(R.styleable.SpeedometerView_bigBarsWidth, defBigBarsWidthPx)
                 val bigBarsHeight = getDimension(R.styleable.SpeedometerView_bigBarsHeight, defBigBarsHeightPx)
-                val angleMaxDegrees = getFloat(R.styleable.SpeedometerView_angleMaxDegrees, defAngleMaxDegrees)
-                val angleMinDegrees = getFloat(R.styleable.SpeedometerView_angleMinDegrees, defAngleMinDegrees)
+                angleMaxDegrees = getFloat(R.styleable.SpeedometerView_angleMaxDegrees, defAngleMaxDegrees)
+                angleMinDegrees = getFloat(R.styleable.SpeedometerView_angleMinDegrees, defAngleMinDegrees)
                 val bigSpeedStepKmh = getFloat(R.styleable.SpeedometerView_bigSpeedStepKmh, defBigSpeedStepKmh)
                 val smallSpeedStepKmh = getFloat(R.styleable.SpeedometerView_smallSpeedStepKmh, defSmallSpeedStepKmh)
                 val minSpeedKmh = getFloat(R.styleable.SpeedometerView_minSpeedKmh, defMinSpeedKmh)
@@ -179,6 +183,6 @@ class SpeedometerView : FrameLayout {
     }
 
     private fun speedToAngle(speedKmh: Float): Float {
-        return (ANGLE_MAX - ANGLE_MIN) * speedKmh / maxSpeed + ANGLE_MIN
+        return (angleMaxDegrees - angleMinDegrees) * speedKmh / maxSpeed + angleMinDegrees
     }
 }
