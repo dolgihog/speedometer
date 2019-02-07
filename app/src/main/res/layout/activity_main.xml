@@ -10,7 +10,7 @@
         android:keepScreenOn="true"
         android:background="#B2DEFF">
 
-    <com.dolgikh.speedometer.SpeedometerView
+    <com.dolgikh.speedometer.views.SpeedometerView
             android:id="@+id/speedometerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

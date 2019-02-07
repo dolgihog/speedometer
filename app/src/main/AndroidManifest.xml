@@ -10,7 +10,7 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
         <service
-                android:name=".MockSpeedProducer"
+                android:name=".speedproducer.MockSpeedProducer"
                 android:enabled="true"
                 android:exported="true"
                 android:process="${applicationId}.speedproducer">

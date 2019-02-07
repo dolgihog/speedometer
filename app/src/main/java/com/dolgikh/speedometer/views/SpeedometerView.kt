@@ -1,10 +1,11 @@
-package com.dolgikh.speedometer
+package com.dolgikh.speedometer.views
 
 import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
 import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
+import com.dolgikh.speedometer.R
 
 class SpeedometerView : FrameLayout {
 

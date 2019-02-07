@@ -1,4 +1,4 @@
-package com.dolgikh.speedometer
+package com.dolgikh.speedometer.views
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -22,11 +22,11 @@ class PointerView(
     private var defPointerHeight: Float = 0f
     private var centerX: Float = 0f
     private var centerY: Float = 0f
-    private val halfOfPointerWidth: Float = pointerWidthPx / 2
     var pointerHeightPx: Float? = null
 
     private val paint: Paint = Paint().apply {
         color = pointerColor
+        strokeWidth = pointerWidthPx
     }
 
     var angleDegrees: Float = 0f
@@ -49,11 +49,11 @@ class PointerView(
         pointerHeightPx: Float
     ) {
         canvas.rotate(angleDegrees, centerX, centerY)
-        canvas.drawRect(
-            centerX - halfOfPointerWidth,
-            centerY + pointerHeightPx,
-            centerX + halfOfPointerWidth,
+        canvas.drawLine(
+            centerX,
             centerY,
+            centerX,
+            centerY + pointerHeightPx,
             paint
         )
     }

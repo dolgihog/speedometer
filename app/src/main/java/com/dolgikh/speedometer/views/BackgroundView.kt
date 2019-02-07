@@ -1,4 +1,4 @@
-package com.dolgikh.speedometer
+package com.dolgikh.speedometer.views
 
 import android.annotation.SuppressLint
 import android.content.Context

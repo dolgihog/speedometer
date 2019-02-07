@@ -1,4 +1,4 @@
-package com.dolgikh.speedometer
+package com.dolgikh.speedometer.data
 
 import android.os.Handler
 import android.os.Message
