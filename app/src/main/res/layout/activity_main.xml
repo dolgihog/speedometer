@@ -7,13 +7,24 @@
         android:layout_height="match_parent"
         tools:context=".MainActivity"
         android:id="@+id/rootLayout"
-        android:keepScreenOn="true">
+        android:keepScreenOn="true"
+        android:background="#B2DEFF">
 
     <com.dolgikh.speedometer.SpeedometerView
             android:id="@+id/speedometerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:bigBarsHeight="15dp"
-            app:pointerColor="@color/colorAccent"
-            app:pointerWidth="6dp"/>
+            app:pointerColor="#C11327"
+            app:pointerWidth="6dp"
+            app:angleMaxDegrees="270"
+            app:angleMinDegrees="0"
+            app:maxSpeedKmh="180"
+            app:minSpeedKmh="0"
+            app:backgroundColor="#1B1A28"
+            app:bigBarsColor="#F5F0EB"
+            app:smallBarsColor="#86858C"
+            app:smallSpeedStepKmh="5"
+            app:bigSpeedStepKmh="20"
+            app:textColor="#F5F0EB"/>
 </FrameLayout>
