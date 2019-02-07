@@ -6,6 +6,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
 import android.view.View
+import kotlin.math.sin
 
 @SuppressLint("ViewConstructor")
 class BackgroundView(
@@ -37,7 +38,7 @@ class BackgroundView(
     private val textPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL_AND_STROKE
         strokeWidth = 3f
-        textAlign = Paint.Align.LEFT
+        textAlign = Paint.Align.CENTER
     }
     private val bigStepAngleDegrees: Float
     private val smallStepAngleDegrees: Float
@@ -91,16 +92,12 @@ class BackgroundView(
             textPaint.getTextBounds(stringValue, 0, stringValue.length, textRect)
             val pivotY = centerY + 6 * radius / 7 - textRect.height() / 2
             canvas.rotate(-angle, centerX, pivotY)
-            val align = when {
-                angle == 0f || angle % 180f == 0f -> Paint.Align.CENTER
-                angle < 180f -> Paint.Align.LEFT
-                else -> Paint.Align.RIGHT
-            }
-            textPaint.textAlign = align
+            val xPoint = centerX + sin(Math.toRadians(angle.toDouble())).toFloat() * textRect.width()
+            val yPoint = pivotY + textRect.height() / 2 + sin(Math.toRadians(angle - 90.toDouble())).toFloat() * textRect.height()
             canvas.drawText(
                 stringValue,
-                centerX,
-                pivotY + textRect.height() / 2,
+                xPoint,
+                yPoint,
                 textPaint
             )
             canvas.restore()
