@@ -6,12 +6,14 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
-import android.os.Message
-import android.os.Messenger
 import android.util.Log
+import com.dolgikh.speedometer.IMyAidlCallback
 import com.dolgikh.speedometer.speedproducer.MockSpeedProducer
+import com.dolgikh.speedometer.IMyAidlInterface
+import java.util.concurrent.atomic.AtomicReference
 
-class DataRepository : ClientHandler.Callback {
+
+class DataRepository {
 
     companion object {
         private const val LOG_TAG = "DataRepository"
@@ -22,39 +24,44 @@ class DataRepository : ClientHandler.Callback {
     }
 
     private var client: Activity? = null
-    private var speedListener: SpeedListener? = null
+    private val atomicReference: AtomicReference<SpeedListener> = AtomicReference()
     private var bound: Boolean = false
 
-    private var messenger: Messenger = Messenger(ClientHandler(this))
+    private var serviceApi: IMyAidlInterface? = null
+    private var listener: IMyAidlCallback? = null
 
     private val connection = object : ServiceConnection {
 
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
-            val message = Message.obtain()
-            message.replyTo = messenger
-            Messenger(service).send(message)
+            serviceApi = IMyAidlInterface.Stub.asInterface(service)
+            listener = object : IMyAidlCallback.Stub() {
+                override fun handleSpeed(speed: Float) {
+                    Log.d(LOG_TAG, "handleSpeed: thread = ${Thread.currentThread().name}")
+                    atomicReference.get()?.onSpeedGenerated(speed)
+                }
+            }
             bound = true
+            serviceApi?.subscribe(listener)
         }
 
         override fun onServiceDisconnected(className: ComponentName) {
-            Log.e(LOG_TAG, "Service has unexpectedly disconnected")
+            Log.d(LOG_TAG, "onServiceDisconnected: reconnect")
+            client?.let { client ->
+                client.bindService(Intent(client, MockSpeedProducer::class.java), this, Context.BIND_AUTO_CREATE)
+            }
         }
     }
 
     fun <T> subscribe(client: T) where T : Activity, T : SpeedListener {
         this.client = client
-        this.speedListener = client
+        atomicReference.set(client)
         client.bindService(Intent(client, MockSpeedProducer::class.java), connection, Context.BIND_AUTO_CREATE)
     }
 
     fun unsubscribe() {
         if (bound) client?.unbindService(connection)
         client = null
-        speedListener = null
+        atomicReference.set(null)
         bound = false
-    }
-
-    override fun call(speed: Float) {
-        speedListener?.onSpeedGenerated(speed)
     }
 }
